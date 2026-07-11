@@ -1,0 +1,23 @@
+0010000000000001 // load "1" into cpu
+0000000000000001 // the constant 1
+1100000000000001 // move 1 into reg A
+1100000000000010 // move 1 into reg B
+
+0010000000000001 // load "10" into cpu
+0000000000000111 // the constant 10
+1100000000000100 //move it to jump register
+//setup
+
+0000000000000001 // add A and b
+0100000000001000 // move A to bus
+1100000000000010 // set B to bus
+1110000000000001 // move result to data bus
+1100000000000001 // set a to result
+//core 
+
+1100000000000110 //jump if no carry
+
+1110000000000001 // move result to data bus
+0100000000000101
+
+1111111111111111 // Row 4 (HALT)
