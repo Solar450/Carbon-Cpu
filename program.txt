@@ -1,3 +1,6 @@
+//the fibonacci sequence
+//at a certain point, it will go negative. 
+
 0010000000000001 // load "1" into cpu
 0000000000000001 // the constant 1
 1100000000000001 // move 1 into reg A
