@@ -33,7 +33,9 @@ std::vector<std::string> writeFile (std::string inputFile,std::vector<std::strin
     //open file
 
     if (!file.is_open()) {
-        std::cout << "Error could not open file" << std::endl;
+        std::cout << "Error could not open file" ;
+        std::cout << inputFile << std::endl;
+
         return { "Error" };
     }
 
@@ -49,7 +51,7 @@ json readJson (std::string input) {
     //open the json
 
     if(!file.is_open()) {
-        std::cout << "Error could not open file" << std::endl;
+        std::cout << "Error could not open json" << std::endl;
         return json::object();
     }
 
@@ -62,7 +64,7 @@ json readJson (std::string input) {
     //output all the data
 }
 
-bool isInteger(std::string_view inputString){
+bool isInteger(std::string_view inputString) {
     if (inputString.empty()) return false;
 
     int value = 0;
@@ -72,9 +74,22 @@ bool isInteger(std::string_view inputString){
     return ec == std::errc{} && ptr == inputString.data() + inputString.size();
 }
 
+std::vector<std::string> split(std::string inputString) {
+    std::stringstream ss(inputString);
+
+    std::string word;
+    std::vector<std::string> tokens;
+
+    while (ss >> word) {
+        tokens.push_back(word);
+    }
+
+    return tokens;
+}
+
 int main(){
 
-    json config = readJson("D:/programs/FolderC/config.json");
+    json config = readJson("D:/programs/CarbonAssemblyTranslator/config.json");
 
     const std::string inputFile = config["inputFile"];
     const std::string binaryFile = config["binaryFile"];
@@ -92,24 +107,37 @@ int main(){
     std::vector<std::string> output;
     for (const auto& i : input) {
         
-        if (binary.contains(i)) {
-            std::string binaryLine = binary[i];//translate asm
+        std::vector<std::string> tokens = split(i);
+        std::string instruction = tokens[0];
+
+        if (binary.contains(instruction)) {
+            std::string binaryLine = binary[instruction];//translate asm
             output.push_back(binaryLine);
 
-        } else if (i.empty()){//if a line is empty, ignore it
+            if (instruction == "LDC") {
+                if (tokens.size() >= 2 && isInteger(tokens[1])) { // if a load instruction is recieved and a valid constant is present
+                    output.push_back(std::bitset<16>{std::stoi(tokens[1])}.to_string() + " // A Signed Integer");
+                }   else {
+                    std::cout << "Error. No valid constant. ";
+                    std::cout << ":(" << std::endl;
+                    output = {"Error. No valid constant."};//not return so you can see the problem in the output txt
+                    break;
+                } 
+            } 
+        }
+
+        if (i.empty()){//if a line is empty, ignore it
             output.push_back("");
 
         } else if (i.rfind("//", 0) == 0){//preserve comments
             output.push_back(i);
 
-        } else if (isInteger(i)){ //check if its a integer
-            output.push_back(std::bitset<16>{std::stoi(i)}.to_string() + " // A Signed Integer");
-        }
-            else {
+        }  else {
             std::cout << "Error. Token not supported: ";
             std::cout << i << std::endl;
-            output = {"Error!",i};//not return so you can see the problem in the output txt
+            output = {"Error. Token not supported:",i};
         }
+
     }
 
     writeFile(outputFile,output);
