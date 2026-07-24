@@ -6,3 +6,4 @@
 1110000000000001 // Accumulator to Data Bus
 0100000000000101 // Forward Bus to Output
 1111111111111111 // Halt CPU Execution
+// this is the translated verison of abs x .txt
