@@ -1,11 +1,1 @@
-LDC
-30000
-BRB
-
-LDC
-32767
-BRA
-ADD
-CRB
-FBO
-HLT
+//nothing here rn...
