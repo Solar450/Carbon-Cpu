@@ -1,0 +1,8 @@
+0000000000001000 // Carry High (1)
+1110000000000010 // Carry Register to Data Bus
+1100000000000001 // Set Register A to Data Bus
+1100000000000010 // Set Register B to Data Bus
+0000000000000001 // ALU Addition
+1110000000000001 // Accumulator to Data Bus
+0100000000000101 // Forward Bus to Output
+1111111111111111 // Halt CPU Execution

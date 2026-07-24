@@ -1,0 +1,38 @@
+{
+    "ADD": "0000000000000001 // ALU Addition",
+    "SUB": "0000000000000010 // ALU Subtraction",
+    "MUL": "0000000000000011 // ALU Multiplication",
+    "DIV": "0000000000000100 // ALU Divison",
+    "BSL": "0000000000000101 // ALU Bit Shift Right",
+    "BSR": "0000000000000110 // ALU Bit Shift Left",
+
+    "ROB": "1000000000000100 // RAM Out to Data Bus",
+    "ACB": "1110000000000001 // Accumulator to Data Bus",
+    "CRB": "1110000000000010 // Carry Register to Data Bus",
+    "PCB": "1110000000000011 // Program Counter to Data Bus",
+    "INB": "0100000000000111 // Input to Data Bus",
+    "RAB": "0100000000001000 // Register A to Data Bus",
+    "RBB": "0100000000001001 // Register B to Data Bus",
+    "RCB": "0100000000001010 // Register C to Data Bus",
+
+    "LDC": "0010000000000001 // Load Constant Next Cycle (signed int)",
+
+    "WTR": "1000000000000011 // Write Data To Ram (Data Bus holds data, Reg A is pointer)",
+
+    "CRL": "0000000000000111 // Carry Low (0)",
+    "CRH": "0000000000001000 // Carry High (1)",
+
+    "BRA": "1100000000000001 // Set Register A to Data Bus",
+    "BRB": "1100000000000010 // Set Register B to Data Bus",
+    "BRC": "1100000000000011 // Set Register C to Data Bus",
+
+    "BJR": "1100000000000100 // Set Jump Register to Data Bus",
+
+    "UCJ": "1100000000000101 // Unconditional Jump to Jump Register",
+    "CHJ": "1100000000000110 // Conditional Jump; Jump if Carry High",
+    "CLJ": "1100000000000111 // Conditional Jump; Jump if Carry Low",
+    
+    "FBO": "0100000000000101 // Forward Bus to Output",
+    "HLT": "1111111111111111 // Halt CPU Execution",
+    "NOP": "0000000000000000 // No Operation"
+}
