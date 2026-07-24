@@ -261,7 +261,8 @@ module RAM_16 (
     reg [15:0] ram [0:65535]; 
 
     initial begin
-        $readmemb("program.txt", ram); 
+        //program.txt
+        $readmemb("D:/programs/Cpu folder/cpuPrograms(3.5)/random.txt", ram); 
     end
 
     always @(posedge clock) begin
@@ -348,7 +349,7 @@ module Control_Unit(
 
         if (state_reg == FETCH) begin
                 RAM_address_wire = Program_Counter;
-                //during fetch cycle, get the during opcode
+                //during fetch cycle, get the opcode
         end else begin
 
             if (opCode == 16'b1000000000000100 || opCode == 16'b1000000000000011) begin //if writing data to ram or reciving data from ram, connect reg A to Ram address
@@ -390,8 +391,6 @@ module Control_Unit(
                 16'b0000000000000101: ALU_state = 3'd4; // bsl
                 16'b0000000000000110: ALU_state = 3'd5; // bsr
 
-                16'b0000000000000001: $display("adding");
-
                 default:              ALU_state = 3'd7; // this ALU state does nothing
             endcase
 
@@ -421,8 +420,8 @@ module Control_Unit(
 
                 case (opCode)
 
-                        16'b0000000000000111: Register_C <= 16'd0; // Clear carry
-                        16'b0000000000001000: Register_C <= 16'd1; // Set carry high(for sub)
+                        16'b0000000000000111: Carry_Reg <= 16'd0; // Clear carry
+                        16'b0000000000001000: Carry_Reg <= 16'd1; // Set carry high(for sub)
 
                         16'b0000000000000001, 16'b0000000000000010,
                         16'b0000000000000011, 16'b0000000000000100,
@@ -441,13 +440,13 @@ module Control_Unit(
 
 
                         // Jumps / Program Counter updates
-                        16'b1100000000000100: Program_Counter <= dataBus; // Unconditional Jump
-                        16'b1100000000000101: begin                       // Conditional carry Jump (jump if carry)
+                        16'b1100000000000101: Program_Counter <= dataBus; // Unconditional Jump
+                        16'b1100000000000110: begin                       // Conditional carry Jump (jump if carry)
                                 if (Carry_Reg == 16'd1) begin
                                         Program_Counter <= Jump_Register;
                                 end
                         end
-                        16'b1100000000000110: begin                       // Conditional not carry Jump (jump if no carry)
+                        16'b1100000000000111: begin                       // Conditional not carry Jump (jump if no carry)
                                 if (Carry_Reg == 16'd0) begin
                                         Program_Counter <= Jump_Register;
                                 end
@@ -488,13 +487,14 @@ module Main;
 
     always @(posedge clock) begin
     
-    $display("[Time %0t] PC: %d | Load_Flag: %d |Data Bus: %d | Registers: %d,%d | State: %s | Opcode Fetched: %b", 
+    $display("[Time %0t] PC: %d | Load_Flag: %d |Data Bus: %d | Registers: %d,%d,%d | State: %s | Opcode Fetched: %b", 
              $time, 
              CU.Program_Counter,
              CU.load_flag,
              CU.dataBus, 
              CU.Register_A,
              CU.Register_B,
+             CU.Carry_Reg,
              (CU.state_reg == 1'b0) ? "EXECUTE" : "FETCH", 
              CU.opCode);
      end
