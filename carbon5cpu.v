@@ -576,20 +576,63 @@ module Central_Unit (
                 end
                 3'b101: begin //JMP ------------------------------------------------------------------
                     if (decayCounter == 0) begin
-                        decayCounter <= 2;
-                    end else if (decayCounter == 2) begin
-                        instInput1 <= inst1;
+                        decayCounter <= 1; //the decay is needed so inst points to the following byte
                     end else if (decayCounter == 1) begin
                         case (opcode[4:2])
-                            3'd0: begin
+                            3'd0: begin //JPE
                                 if (zeroFlag == 1'b1) begin
-                                    programCounter <= instInput1;
+                                    programCounter <= programCounter + inst1;
                                 end
                             end
-                            3'd1: begin
-                                
+                            3'd1: begin //JNE
+                                if (zeroFlag != 1'b1) begin
+                                    programCounter <= programCounter + inst1;
+                                end
+                            end
+                            3'd2: begin //JPL
+                                if (negativeFlag == 1'b1 || carryFlag == 1'b0) begin
+                                    programCounter <= programCounter + inst1;
+                                end
+                            end
+                            3'd3: begin //JLE
+                                if (negativeFlag == 1'b1 || carryFlag == 1'b0 || zeroFlag == 1'b1 ) begin
+                                    programCounter <= programCounter + inst1;
+                                end
+                            end
+                            3'd4: begin //JPR
+                                programCounter <= programCounter + inst1;
+                            end
+                            3'd5: begin //JPA
+                                programCounter <= inst1;
                             end
                         endcase
+                        decayCounter <= decayCounter - 1'b1;
+                    end
+                end
+                3'b110: begin //CMP ------------------------------------------------------------------
+                    if (decayCounter == 0) begin
+                        decayCounter <= 4;
+                    end else if(decayCounter == 3) begin
+                        registerToDataBus(inst1); //connect reg to alu input A
+                        DBaluAmc <= 1'b1;
+                    end else if (decayCounter == 2) begin
+                        if (opcode[1:0] == 2'b00) begin //2nd input is a reg
+                            registerToDataBus(inst1); //connect reg to alu input B
+                            DBaluBmc <= 1'b1;
+                        end else begin
+                            if (intDecay != 1) begin
+                                loadConstant;
+                            end else begin
+                                intDecay <= 3'd0;
+                                decayCounter <= decayCounter - 1;
+                                DBaluBmc = 1'b1;
+                            end
+                        end
+                    end else if (decayCounter == 1) begin
+                        aluState <= 3'd1; //Sub
+                    end
+                    if (intDecay == 3'd0 && (decayCounter != 3'd2 || opcode[1:0] == 2'b00)) begin
+                        decayCounter <= decayCounter - 1'b1;
                     end
                 end
             endcase
